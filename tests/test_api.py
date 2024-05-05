@@ -41,23 +41,27 @@ def test_pictures_json_is_not_empty(client):
     res = client.get("/picture")
     assert len(res.json) > 0
 
+import json
 
-def test_post_picture(picture, client):
+def test_post_picture(client):
     # create a brand new picture to upload
-    res = client.post("/picture", data=json.dumps(picture),
-                      content_type="application/json")
+    picture = {'id': 200, 'pic_url': 'http://dummyimage.com/230x100.png/dddddd/000000', 'event_country': 'United States', 'event_state': 'California', 'event_city': 'Fremont', 'event_date': '11/2/2030'}
+
+    res = client.post("/picture", json=picture)
     assert res.status_code == 201
     assert res.json['id'] == picture['id']
+
     res = client.get("/count")
     assert res.status_code == 200
     assert res.json['length'] == 11
 
-def test_post_picture_duplicate(picture, client):
+def test_post_picture_duplicate(client):
     # create a brand new picture to upload
-    res = client.post("/picture", data=json.dumps(picture),
-                      content_type="application/json")
+    picture = {'id': 200, 'pic_url': 'http://dummyimage.com/230x100.png/dddddd/000000', 'event_country': 'United States', 'event_state': 'California', 'event_city': 'Fremont', 'event_date': '11/2/2030'}
+
+    res = client.post("/picture", json=picture)
     assert res.status_code == 302
-    assert res.json['Message'] == f"picture with id {picture['id']} already present"
+    assert res.json['Message'] == f"Picture with id {picture['id']} already present"
 
 def test_update_picture_by_id(client, picture):
     id = '2'
